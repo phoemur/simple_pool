@@ -304,22 +304,87 @@ void Level::change_state()
     bool cur_turn = player1turn;
 
     // Check own ball not hit first
+    check_first_hit(cur_turn);
+
+    // Balls pocketed
+    check_balls_in_pockets(cur_turn);
+
+    // Check balls off the table
+    check_balls_off_table(cur_turn);
+
+    move_was_made = false;
+}
+
+void Level::check_first_hit(bool cur_turn)
+{
+    // Check own ball not hit first
     int f = collobserver.get_first_hit();
     if (cur_turn)
     {
-        if (team_color == 1 && f >= 8 && f < 16)
+        if (team_color == 1 && (Ball::is_stripes(f) || f == 8))
+        {
             player1turn = !cur_turn;
-        else if (team_color == 2 && f > 0 && f <= 8)
+            std::cout << "Fault: Own ball not hit first" << std::endl;
+        }
+        else if (team_color == 2 && (Ball::is_solid(f) || f == 8))
+        {
             player1turn = !cur_turn;
+            std::cout << "Fault: Own ball not hit first" << std::endl;
+        }
     }
     else // Player 2 turn
     {
-        if (team_color == 2 && f >= 8 && f < 16)
+        if (team_color == 2 && (Ball::is_stripes(f) || f == 8))
+        {
             player1turn = !cur_turn;
-        else if (team_color == 1 && f > 0 && f <= 8)
+            std::cout << "Fault: Own ball not hit first" << std::endl;
+        }
+        else if (team_color == 1 && (Ball::is_solid(f) || f == 8))
+        {
             player1turn = !cur_turn;
+            std::cout << "Fault: Own ball not hit first" << std::endl;
+        }
     }
+}
 
+void Level::check_balls_off_table(bool cur_turn)
+{
+    // Check balls off the table
+    for (auto& b : balls)
+        if (ball_off_table(b))
+        {
+            auto pos = get_safe_pos();
+            b.posData.pos_x = pos.first;
+            b.posData.pos_y = pos.second;
+            b.movData.speed_x = 0.0;
+            b.movData.speed_y = 0.0;
+
+            player1turn = !cur_turn;
+            std::cout << "Fault: Ball off the table" << std::endl;
+        }
+
+    if (ball_off_table(cueball))
+    {
+        create_cue_ball();
+        player1turn = !cur_turn;
+        std::cout << "Fault: Cue ball off the table" << std::endl;
+    }
+}
+
+void Level::check_team_color(bool cur_turn)
+{
+    // Check team color
+    if (team_color == 0)
+    {
+        if (std::all_of(pockets.begin(), pockets.end(), &Ball::is_solid))
+            team_color = cur_turn ? 1 : 2;
+        else if (std::all_of(pockets.begin(), pockets.end(), &Ball::is_stripes))
+            team_color = cur_turn ? 2 : 1;
+    }
+}
+
+void Level::check_balls_in_pockets(bool cur_turn)
+{
     // Balls pocketed
     if (pockets.size() == 0)
         player1turn = !cur_turn;
@@ -334,9 +399,9 @@ void Level::change_state()
         else if (cur_turn) // Player 1 turn
         {
             // Own ball not in the pocket
-            if (team_color == 1 && std::find_if(pockets.begin(), pockets.end(), [](int a){return a > 0 && a < 8;}) == pockets.end())
+            if (team_color == 1 && std::find_if(pockets.begin(), pockets.end(), &Ball::is_solid) == pockets.end())
                 player1turn = !cur_turn;
-            else if (team_color == 2 && std::find_if(pockets.begin(), pockets.end(), [](int a){return a > 8 && a < 16;}) == pockets.end())
+            else if (team_color == 2 && std::find_if(pockets.begin(), pockets.end(), &Ball::is_stripes) == pockets.end())
                 player1turn = !cur_turn;
             // 8 ball in the pocket
             else if (std::find(pockets.begin(), pockets.end(), 8) != pockets.end())
@@ -374,9 +439,9 @@ void Level::change_state()
         else // Player 2 turn
         {
             // Own ball not in the pocket
-            if (team_color == 2 && std::find_if(pockets.begin(), pockets.end(), [](int a){return a > 0 && a < 8;}) == pockets.end())
+            if (team_color == 2 && std::find_if(pockets.begin(), pockets.end(), &Ball::is_solid) == pockets.end())
                 player1turn = !cur_turn;
-            else if (team_color == 1 && std::find_if(pockets.begin(), pockets.end(), [](int a){return a > 8 && a < 16;}) == pockets.end())
+            else if (team_color == 1 && std::find_if(pockets.begin(), pockets.end(), &Ball::is_stripes) == pockets.end())
                 player1turn = !cur_turn;
             // 8 ball in the pocket
             else if (std::find(pockets.begin(), pockets.end(), 8) != pockets.end())
@@ -413,35 +478,8 @@ void Level::change_state()
         }
 
         // Check team color
-        if (team_color == 0)
-        {
-            if (std::all_of(pockets.begin(), pockets.end(), [](int a){return a < 8 && a > 0;}))
-                team_color = cur_turn ? 1 : 2;
-            else if (std::all_of(pockets.begin(), pockets.end(), [](int a){return a < 16 && a > 8;}))
-                team_color = cur_turn ? 2 : 1;
-        }
+        check_team_color(cur_turn);
 
         pockets.clear();
     }
-
-    // Check balls off the table
-    for (auto& b : balls)
-        if (ball_off_table(b))
-        {
-            auto pos = get_safe_pos();
-            b.posData.pos_x = pos.first;
-            b.posData.pos_y = pos.second;
-            b.movData.speed_x = 0.0;
-            b.movData.speed_y = 0.0;
-
-            player1turn = !cur_turn;
-        }
-
-    if (ball_off_table(cueball))
-    {
-        create_cue_ball();
-        player1turn = !cur_turn;
-    }
-
-    move_was_made = false;
 }

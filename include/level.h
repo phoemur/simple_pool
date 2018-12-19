@@ -54,6 +54,10 @@ private:
     void render_head();
     void recenter_cue();
     void change_state();
+    void check_first_hit(bool cur_turn);
+    void check_balls_off_table(bool cur_turn);
+    void check_team_color(bool cur_turn);
+    void check_balls_in_pockets(bool cur_turn);
 };
 
 #endif // LEVEL_H

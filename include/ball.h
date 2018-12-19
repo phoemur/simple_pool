@@ -31,6 +31,9 @@ public:
     virtual void render() override;
 
     bool is_moving() const noexcept;
+
+    static bool   is_solid(int num) {return num > 0 && num < 8;}
+    static bool is_stripes(int num) {return num > 8 && num < 16;}
 };
 
 #endif // BALL_H
