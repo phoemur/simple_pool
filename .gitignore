@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+simple_pool
+
+#Project Files
+*.user
