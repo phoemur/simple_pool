@@ -1,0 +1,21 @@
+language: cpp
+compiler: gcc
+dist: trusty
+
+before_install:
+  - cd ${TRAVIS_BUILD_DIR}
+  - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
+  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+  - sudo apt-get update -qq
+
+install:
+  - sudo apt-get install -qq g++-7
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
+  - sudo apt-get install -qq libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libegl1-mesa-dev libgles2-mesa-dev
+
+script: 
+  - cd ${TRAVIS_BUILD_DIR}
+  - mkdir -p build
+  - cd build
+  - cmake ..
+  - make
