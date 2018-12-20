@@ -104,7 +104,6 @@ void Level::handle_when_still(SDL_Event& e)
 
         cueball.notify(Event::SUBJECT_CUE_COLLIDED);
         move_was_made = true;
-
     }
     else if (e.type == SDL_MOUSEMOTION)
     {
@@ -382,47 +381,39 @@ void Level::check_balls_in_pockets(bool cur_turn)
             create_cue_ball();
             player1turn = !cur_turn;
         }
-        else if (cur_turn) // Player 1 turn
+
+        if (cur_turn) // Player 1 turn
         {
             // Own ball not in the pocket
             if (team_color == 1 && std::none_of(pockets.begin(), pockets.end(), &Ball::is_solid))
                 player1turn = !cur_turn;
             else if (team_color == 2 && std::none_of(pockets.begin(), pockets.end(), &Ball::is_stripes))
                 player1turn = !cur_turn;
+
             // 8 ball in the pocket
-            else if (std::find(pockets.begin(), pockets.end(), 8) != pockets.end())
+            if (std::find(pockets.begin(), pockets.end(), 8) != pockets.end())
             {
                 if (team_color == 0)
                     lost(cur_turn);
-                else if (team_color == 1)
+                else if (team_color == 1 && std::any_of(std::begin(balls),
+                                                        std::end(balls),
+                                                        [](Ball& b) {
+                                                            return b.is_visible && Ball::is_solid(b.id);
+                                                        }))
                 {
-                    if (std::any_of(std::begin(balls),
-                                    std::end(balls),
-                                    [](auto& b) {
-                                        return b.is_visible && b.id > 0 && b.id < 8;
-                                    }))
-                    {
-                        lost(cur_turn);
-                    }
-                    else
-                    {
-                        won(cur_turn);
-                    }
+                    lost(cur_turn);
                 }
-                else if (team_color == 2)
+                else if (team_color == 2 && std::any_of(std::begin(balls),
+                                                        std::end(balls),
+                                                        [](Ball& b) {
+                                                            return b.is_visible && Ball::is_stripes(b.id);
+                                                        }))
                 {
-                    if (std::any_of(std::begin(balls),
-                                    std::end(balls),
-                                    [](auto& b) {
-                                        return b.is_visible && b.id > 8 && b.id < 16;
-                                    }))
-                    {
-                        lost(cur_turn);
-                    }
-                    else
-                    {
-                        won(cur_turn);
-                    }
+                    lost(cur_turn);
+                }
+                else
+                {
+                    won(cur_turn);
                 }
             }
         }
@@ -433,40 +424,31 @@ void Level::check_balls_in_pockets(bool cur_turn)
                 player1turn = !cur_turn;
             else if (team_color == 1 && std::none_of(pockets.begin(), pockets.end(), &Ball::is_stripes))
                 player1turn = !cur_turn;
+
             // 8 ball in the pocket
-            else if (std::find(pockets.begin(), pockets.end(), 8) != pockets.end())
+            if (std::find(pockets.begin(), pockets.end(), 8) != pockets.end())
             {
                 if (team_color == 0)
                     lost(cur_turn);
-                else if (team_color == 2)
+                else if (team_color == 2 && std::any_of(std::begin(balls),
+                                                        std::end(balls),
+                                                        [](Ball& b) {
+                                                            return b.is_visible && Ball::is_solid(b.id);
+                                                        }))
                 {
-                    if (std::any_of(std::begin(balls),
-                                    std::end(balls),
-                                    [](auto& b) {
-                                        return b.is_visible && b.id > 0 && b.id < 8;
-                                    }))
-                    {
-                        lost(cur_turn);
-                    }
-                    else
-                    {
-                        won(cur_turn);
-                    }
+                    lost(cur_turn);
                 }
-                else if (team_color == 1)
+                else if (team_color == 1 && std::any_of(std::begin(balls),
+                                                        std::end(balls),
+                                                        [](Ball& b) {
+                                                            return b.is_visible && Ball::is_stripes(b.id);
+                                                        }))
                 {
-                    if (std::any_of(std::begin(balls),
-                                    std::end(balls),
-                                    [](auto& b) {
-                                        return b.is_visible && b.id > 8 && b.id < 16;
-                                    }))
-                    {
-                        lost(cur_turn);
-                    }
-                    else
-                    {
-                        won(cur_turn);
-                    }
+                    lost(cur_turn);
+                }
+                else
+                {
+                    won(cur_turn);
                 }
             }
         }
