@@ -202,6 +202,8 @@ bool Level::check_pocket(Ball& b)
 
             pockets.push_back(b.id);
 
+            std::cout << b.id << std::endl;
+
             return true;
         }
     }
@@ -395,29 +397,33 @@ void Level::check_balls_in_pockets(bool cur_turn)
                     lost(cur_turn);
                 else if (team_color == 1)
                 {
-                    bool flag = false;
-
-                    for (auto& b : balls)
-                        if(b.is_visible && Ball::is_solid(b.id))
-                            flag = true;
-
-                    if (flag)
+                    if (std::any_of(std::begin(balls),
+                                    std::end(balls),
+                                    [](auto& b) {
+                                        return b.is_visible && b.id > 0 && b.id < 8;
+                                    }))
+                    {
                         lost(cur_turn);
+                    }
                     else
+                    {
                         won(cur_turn);
+                    }
                 }
                 else if (team_color == 2)
                 {
-                    bool flag = false;
-
-                    for (auto& b : balls)
-                        if(b.is_visible && Ball::is_stripes(b.id))
-                            flag = true;
-
-                    if (flag)
+                    if (std::any_of(std::begin(balls),
+                                    std::end(balls),
+                                    [](auto& b) {
+                                        return b.is_visible && b.id > 8 && b.id < 16;
+                                    }))
+                    {
                         lost(cur_turn);
+                    }
                     else
+                    {
                         won(cur_turn);
+                    }
                 }
             }
         }
@@ -435,29 +441,33 @@ void Level::check_balls_in_pockets(bool cur_turn)
                     lost(cur_turn);
                 else if (team_color == 2)
                 {
-                    bool flag = false;
-
-                    for (auto& b : balls)
-                        if(b.is_visible && Ball::is_solid(b.id))
-                            flag = true;
-
-                    if (flag)
+                    if (std::any_of(std::begin(balls),
+                                    std::end(balls),
+                                    [](auto& b) {
+                                        return b.is_visible && b.id > 0 && b.id < 8;
+                                    }))
+                    {
                         lost(cur_turn);
+                    }
                     else
+                    {
                         won(cur_turn);
+                    }
                 }
                 else if (team_color == 1)
                 {
-                    bool flag = false;
-
-                    for (auto& b : balls)
-                        if(b.is_visible && Ball::is_stripes(b.id))
-                            flag = true;
-
-                    if (flag)
+                    if (std::any_of(std::begin(balls),
+                                    std::end(balls),
+                                    [](auto& b) {
+                                        return b.is_visible && b.id > 8 && b.id < 16;
+                                    }))
+                    {
                         lost(cur_turn);
+                    }
                     else
+                    {
                         won(cur_turn);
+                    }
                 }
             }
         }
