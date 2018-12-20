@@ -104,6 +104,7 @@ void Level::handle_when_still(SDL_Event& e)
 
         cueball.notify(Event::SUBJECT_CUE_COLLIDED);
         move_was_made = true;
+
     }
     else if (e.type == SDL_MOUSEMOTION)
     {
@@ -201,8 +202,6 @@ bool Level::check_pocket(Ball& b)
             b.is_visible = false;
 
             pockets.push_back(b.id);
-
-            std::cout << b.id << std::endl;
 
             return true;
         }
