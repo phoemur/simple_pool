@@ -1,12 +1,11 @@
 #include "level.h"
 #include "mainwindow.h"
 
-#include <SDL.h>
-#include <string>
-#include <cmath>
-
 #include <algorithm>
-#include <iostream>
+#include <cmath>
+#include <string>
+
+#include <SDL.h>
 
 Level::Level()
     : background{}, p1{}, p2{}, f1{}, b8{}, b1{}, b9{},
@@ -322,28 +321,16 @@ void Level::check_first_hit(bool cur_turn)
     if (cur_turn)
     {
         if (team_color == 1 && (Ball::is_stripes(f) || f == 8))
-        {
             player1turn = !cur_turn;
-            std::cout << "Fault: Own ball not hit first" << std::endl;
-        }
         else if (team_color == 2 && (Ball::is_solid(f) || f == 8))
-        {
             player1turn = !cur_turn;
-            std::cout << "Fault: Own ball not hit first" << std::endl;
-        }
     }
     else // Player 2 turn
     {
         if (team_color == 2 && (Ball::is_stripes(f) || f == 8))
-        {
             player1turn = !cur_turn;
-            std::cout << "Fault: Own ball not hit first" << std::endl;
-        }
         else if (team_color == 1 && (Ball::is_solid(f) || f == 8))
-        {
             player1turn = !cur_turn;
-            std::cout << "Fault: Own ball not hit first" << std::endl;
-        }
     }
 }
 
@@ -360,14 +347,12 @@ void Level::check_balls_off_table(bool cur_turn)
             b.movData.speed_y = 0.0;
 
             player1turn = !cur_turn;
-            std::cout << "Fault: Ball off the table" << std::endl;
         }
 
     if (ball_off_table(cueball))
     {
         create_cue_ball();
         player1turn = !cur_turn;
-        std::cout << "Fault: Cue ball off the table" << std::endl;
     }
 }
 
@@ -399,80 +384,80 @@ void Level::check_balls_in_pockets(bool cur_turn)
         else if (cur_turn) // Player 1 turn
         {
             // Own ball not in the pocket
-            if (team_color == 1 && std::find_if(pockets.begin(), pockets.end(), &Ball::is_solid) == pockets.end())
+            if (team_color == 1 && std::none_of(pockets.begin(), pockets.end(), &Ball::is_solid))
                 player1turn = !cur_turn;
-            else if (team_color == 2 && std::find_if(pockets.begin(), pockets.end(), &Ball::is_stripes) == pockets.end())
+            else if (team_color == 2 && std::none_of(pockets.begin(), pockets.end(), &Ball::is_stripes))
                 player1turn = !cur_turn;
             // 8 ball in the pocket
             else if (std::find(pockets.begin(), pockets.end(), 8) != pockets.end())
             {
                 if (team_color == 0)
-                    GameState::next_state = GameStates::Lost;
+                    lost(cur_turn);
                 else if (team_color == 1)
                 {
                     bool flag = false;
 
                     for (auto& b : balls)
-                        if(b.is_visible && b.id < 8 && b.id > 0)
+                        if(b.is_visible && Ball::is_solid(b.id))
                             flag = true;
 
                     if (flag)
-                        GameState::next_state = GameStates::Lost;
+                        lost(cur_turn);
                     else
-                        GameState::next_state = GameStates::Won;
+                        won(cur_turn);
                 }
                 else if (team_color == 2)
                 {
                     bool flag = false;
 
                     for (auto& b : balls)
-                        if(b.is_visible && b.id < 16 && b.id > 8)
+                        if(b.is_visible && Ball::is_stripes(b.id))
                             flag = true;
 
                     if (flag)
-                        GameState::next_state = GameStates::Lost;
+                        lost(cur_turn);
                     else
-                        GameState::next_state = GameStates::Won;
+                        won(cur_turn);
                 }
             }
         }
         else // Player 2 turn
         {
             // Own ball not in the pocket
-            if (team_color == 2 && std::find_if(pockets.begin(), pockets.end(), &Ball::is_solid) == pockets.end())
+            if (team_color == 2 && std::none_of(pockets.begin(), pockets.end(), &Ball::is_solid))
                 player1turn = !cur_turn;
-            else if (team_color == 1 && std::find_if(pockets.begin(), pockets.end(), &Ball::is_stripes) == pockets.end())
+            else if (team_color == 1 && std::none_of(pockets.begin(), pockets.end(), &Ball::is_stripes))
                 player1turn = !cur_turn;
             // 8 ball in the pocket
             else if (std::find(pockets.begin(), pockets.end(), 8) != pockets.end())
             {
                 if (team_color == 0)
-                    GameState::next_state = GameStates::Lost;
+                    lost(cur_turn);
                 else if (team_color == 2)
                 {
                     bool flag = false;
 
                     for (auto& b : balls)
-                        if(b.is_visible && b.id < 8 && b.id > 0)
+                        if(b.is_visible && Ball::is_solid(b.id))
                             flag = true;
 
                     if (flag)
-                        GameState::next_state = GameStates::Lost;
+                        lost(cur_turn);
                     else
-                        GameState::next_state = GameStates::Won;
+                        won(cur_turn);
                 }
                 else if (team_color == 1)
                 {
                     bool flag = false;
 
                     for (auto& b : balls)
-                        if(b.is_visible && b.id < 16 && b.id > 8)
+                        if(b.is_visible && Ball::is_stripes(b.id))
                             flag = true;
 
                     if (flag)
-                        GameState::next_state = GameStates::Lost;
+                        lost(cur_turn);
                     else
-                        GameState::next_state = GameStates::Won;
+                        won(cur_turn);
                 }
             }
         }
@@ -482,4 +467,48 @@ void Level::check_balls_in_pockets(bool cur_turn)
 
         pockets.clear();
     }
+}
+
+void Level::won(bool cur_turn)
+{
+    Font f {};
+    f.loadFromFile("./pool_assets/Purisa-BoldOblique.ttf", 20);
+
+    Texture t {};
+
+    if (cur_turn)
+        t.loadFromRenderedText("Player 1 Wins!!", f, SDL_Color{0xFF,0xFF,0xFF,0xFF});
+    else
+        t.loadFromRenderedText("Player 2 Wins!!", f, SDL_Color{0xFF,0xFF,0xFF,0xFF});
+
+    t.render(static_cast<int>((mainwindow->getWidth() - t.getWidth()) / 2),
+             static_cast<int>((mainwindow->getHeight() - t.getHeight()) / 2));
+
+    mainwindow->update();
+
+    SDL_Delay(4000);
+
+    GameState::next_state = GameStates::Intro;
+}
+
+void Level::lost(bool cur_turn)
+{
+    Font f {};
+    f.loadFromFile("./pool_assets/Purisa-BoldOblique.ttf", 20);
+
+    Texture t {};
+
+    if (cur_turn)
+        t.loadFromRenderedText("Player 1 Lost!!", f, SDL_Color{0xFF,0xFF,0xFF,0xFF});
+    else
+        t.loadFromRenderedText("Player 2 Lost!!", f, SDL_Color{0xFF,0xFF,0xFF,0xFF});
+
+    t.render(static_cast<int>((mainwindow->getWidth() - t.getWidth()) / 2),
+             static_cast<int>((mainwindow->getHeight() - t.getHeight()) / 2));
+
+    mainwindow->update();
+
+    SDL_Delay(4000);
+
+    GameState::next_state = GameStates::Intro;
 }

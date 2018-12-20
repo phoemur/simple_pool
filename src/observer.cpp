@@ -2,7 +2,6 @@
 #include "subject.h"
 
 #include <algorithm>
-#include <iostream>
 
 Observer::Observer()
     : observed_{} {}

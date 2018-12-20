@@ -3,7 +3,6 @@
 #include "ball.h"
 #include "subject.h"
 
-#include <iostream>
 #include <cmath>
 
 CollisionObserver::CollisionObserver() {}

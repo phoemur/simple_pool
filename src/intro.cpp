@@ -5,7 +5,7 @@ Intro::Intro()
 {
     f1.loadFromFile("./pool_assets/Purisa-BoldOblique.ttf", 30);
     f2.loadFromFile("./pool_assets/Purisa-BoldOblique.ttf", 16);
-    title.loadFromRenderedText("Wellcome to Pool Remake", f1, SDL_Color{0xFF,0,0,0xFF});
+    title.loadFromRenderedText("Wellcome to Simple Pool", f1, SDL_Color{0xFF,0,0,0xFF});
     subtitle.loadFromRenderedText("Press any key to continue...", f2, SDL_Color{0xFF,0xFF,0xFF,0xFF});
 
     background.loadFromFile("./pool_assets/background.png");

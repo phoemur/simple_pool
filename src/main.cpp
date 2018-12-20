@@ -8,7 +8,7 @@
 int main()
 {
     // MainWindow must be the first object instanciated
-    MainWindow win (800, 600, "Pool game remake");
+    MainWindow win (800, 600, "Simple Pool");
     win.setIcon("./pool_assets/ball8.png");
 
     std::unique_ptr<GameState> currentState {std::make_unique<Intro>()};

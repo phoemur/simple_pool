@@ -35,9 +35,6 @@ class Level : public GameState {
 
 public:
     Level();
-    virtual ~Level() noexcept override = default;
-    Level(const Level&) = delete;
-    Level& operator=(const Level&) = delete;
 
     virtual void handle_events() override;
     virtual void logic() override;
@@ -58,6 +55,8 @@ private:
     void check_balls_off_table(bool cur_turn);
     void check_team_color(bool cur_turn);
     void check_balls_in_pockets(bool cur_turn);
+    void won(bool cur_turn);
+    void lost(bool cur_turn);
 };
 
 #endif // LEVEL_H
