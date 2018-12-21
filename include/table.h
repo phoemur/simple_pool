@@ -12,11 +12,13 @@ class Table {
     Texture background;
     Rect r[6] {};  // Rect colliders for walls
     Ball b[12] {}; // Ball colliders to simulate pocket sides
+    SDL_Point pocket_sensors[6] {}; // Check if ball in the pocket
 
 public:
     Table(CollisionObserver* c = nullptr);
 
     void render();
+    bool is_pocketed(const Ball& b);
 
     double  getWidth() const noexcept {return background.getWidth(); }
     double getHeight() const noexcept {return background.getHeight();}

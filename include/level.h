@@ -25,7 +25,6 @@ class Level : public GameState {
     Ball balls[15] {};
     Ball cueball {};
     Cue cue {};
-    SDL_Point pocket_sensors[6] {}; // Check if ball in the pocket
 
     std::vector<int> pockets {};
     bool moving_state = false;
@@ -44,8 +43,7 @@ private:
     void handle_when_still(SDL_Event& e);
     void create_balls();
     void create_cue_ball();
-    void create_sensors();
-    bool check_pocket(Ball& b);
+    void check_pocket(Ball& b);
     bool ball_off_table(Ball& b);
     std::pair<double,double> get_safe_pos();
     void render_head();
@@ -57,6 +55,7 @@ private:
     void check_balls_in_pockets(bool cur_turn);
     void won(bool cur_turn);
     void lost(bool cur_turn);
+    void message(const std::string& msg, unsigned delay);
 };
 
 #endif // LEVEL_H

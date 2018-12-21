@@ -54,6 +54,20 @@ Table::Table(CollisionObserver* c)
     b[9].setPos(posX + 375, posY + background.getHeight() - 26);
     b[10].setPos(posX + background.getWidth() - 58, posY + background.getHeight() - 25); // Bottom Right
     b[11].setPos(posX + background.getWidth() - 26, posY + background.getHeight() - 58);
+
+    // Place pocket sensors
+    pocket_sensors[0].x = posX + 35; // Top Left
+    pocket_sensors[0].y = posY + 35;
+    pocket_sensors[1].x = posX + 33; // Bottom left
+    pocket_sensors[1].y = posY - 33 + static_cast<int>(background.getHeight());
+    pocket_sensors[2].x = posX - 35 + static_cast<int>(background.getWidth());// Top right
+    pocket_sensors[2].y = posY + 35;
+    pocket_sensors[3].x = posX - 35 + static_cast<int>(background.getWidth()); // Bottom right
+    pocket_sensors[3].y = posY - 35 + static_cast<int>(background.getHeight());
+    pocket_sensors[4].x = posX + static_cast<int>(background.getWidth()/2); // Top middle
+    pocket_sensors[4].y = posY + 25;
+    pocket_sensors[5].x = posX + static_cast<int>(background.getWidth()/2); // Bottom middle
+    pocket_sensors[5].y = posY - 23 + static_cast<int>(background.getHeight());
 }
 
 void Table::render()
@@ -65,4 +79,17 @@ void Table::render()
         elem.render();
     for (auto& elem : b)
         elem.render();*/
+}
+
+bool Table::is_pocketed(const Ball& b)
+{
+    for (auto& p : pocket_sensors)
+    {
+        double dist = std::hypot(b.posData.pos_x - p.x, b.posData.pos_y - p.y);
+
+        if (dist <= b.posData.radius) // hit the pocket
+            return true;
+    }
+
+    return false;
 }

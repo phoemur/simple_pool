@@ -21,7 +21,6 @@ Level::Level()
 
     create_balls();
     create_cue_ball();
-    create_sensors();
 }
 
 void Level::handle_events()
@@ -145,7 +144,7 @@ void Level::create_balls()
         for (int j = 0; j < i; ++j)
             balls[cur++].setPos(px, py + radius*j*2);
 
-        px += radius * 2.0 * std::sqrt(3) / 2;
+        px += radius * std::sqrt(3);
         py += radius;
     }
 
@@ -170,43 +169,17 @@ void Level::create_cue_ball()
     cueball.setPos(pos.first, pos.second);
 }
 
-void Level::create_sensors()
+void Level::check_pocket(Ball& b)
 {
-    // Place pocket sensors
-    pocket_sensors[0].x = tab.getX() + 35; // Top Left
-    pocket_sensors[0].y = tab.getY() + 35;
-    pocket_sensors[1].x = tab.getX() + 33; // Bottom left
-    pocket_sensors[1].y = tab.getY() - 33 + static_cast<int>(tab.getHeight());
-    pocket_sensors[2].x = tab.getX() - 35 + static_cast<int>(tab.getWidth());// Top right
-    pocket_sensors[2].y = tab.getY() + 35;
-    pocket_sensors[3].x = tab.getX() - 35 + static_cast<int>(tab.getWidth()); // Bottom right
-    pocket_sensors[3].y = tab.getY() - 35 + static_cast<int>(tab.getHeight());
-    pocket_sensors[4].x = tab.getX() + static_cast<int>(tab.getWidth()/2); // Top middle
-    pocket_sensors[4].y = tab.getY() + 25;
-    pocket_sensors[5].x = tab.getX() + static_cast<int>(tab.getWidth()/2); // Bottom middle
-    pocket_sensors[5].y = tab.getY() - 23 + static_cast<int>(tab.getHeight());
-}
-
-bool Level::check_pocket(Ball& b)
-{
-    for (auto& p : pocket_sensors)
+    if (tab.is_pocketed(b)) // hit the pocket
     {
-        double dist = std::hypot(b.posData.pos_x - p.x, b.posData.pos_y - p.y);
+        b.notify(Event::SUBJECT_POCKET_COLLIDED);
+        b.removeObserver(&collobserver);
+        b.is_movable = false;
+        b.is_visible = false;
 
-        if (dist <= b.posData.radius) // hit the pocket
-        {
-            b.notify(Event::SUBJECT_POCKET_COLLIDED);
-            b.removeObserver(&collobserver);
-            b.is_movable = false;
-            b.is_visible = false;
-
-            pockets.push_back(b.id);
-
-            return true;
-        }
+        pockets.push_back(b.id);
     }
-
-    return false;
 }
 
 // Check if a ball has fallen off the table
@@ -462,44 +435,36 @@ void Level::check_balls_in_pockets(bool cur_turn)
 
 void Level::won(bool cur_turn)
 {
-    Font f {};
-    f.loadFromFile("./pool_assets/Purisa-BoldOblique.ttf", 20);
-
-    Texture t {};
-
     if (cur_turn)
-        t.loadFromRenderedText("Player 1 Wins!!", f, SDL_Color{0xFF,0xFF,0xFF,0xFF});
+        message("Player 1 Wins!!", 4000);
     else
-        t.loadFromRenderedText("Player 2 Wins!!", f, SDL_Color{0xFF,0xFF,0xFF,0xFF});
-
-    t.render(static_cast<int>((mainwindow->getWidth() - t.getWidth()) / 2),
-             static_cast<int>((mainwindow->getHeight() - t.getHeight()) / 2));
-
-    mainwindow->update();
-
-    SDL_Delay(4000);
+        message("Player 2 Wins!!", 4000);
 
     GameState::next_state = GameStates::Intro;
 }
 
 void Level::lost(bool cur_turn)
 {
+    if (cur_turn)
+        message("Player 1 Lost!!", 4000);
+    else
+        message("Player 2 Lost!!", 4000);
+
+    GameState::next_state = GameStates::Intro;
+}
+
+void Level::message(const std::string& msg, unsigned delay)
+{
     Font f {};
     f.loadFromFile("./pool_assets/Purisa-BoldOblique.ttf", 20);
 
     Texture t {};
-
-    if (cur_turn)
-        t.loadFromRenderedText("Player 1 Lost!!", f, SDL_Color{0xFF,0xFF,0xFF,0xFF});
-    else
-        t.loadFromRenderedText("Player 2 Lost!!", f, SDL_Color{0xFF,0xFF,0xFF,0xFF});
+    t.loadFromRenderedText(msg, f, SDL_Color{0xFF,0xFF,0xFF,0xFF});
 
     t.render(static_cast<int>((mainwindow->getWidth() - t.getWidth()) / 2),
              static_cast<int>((mainwindow->getHeight() - t.getHeight()) / 2));
 
     mainwindow->update();
 
-    SDL_Delay(4000);
-
-    GameState::next_state = GameStates::Intro;
+    SDL_Delay(delay);
 }
