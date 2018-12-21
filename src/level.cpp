@@ -291,20 +291,36 @@ void Level::check_first_hit(bool cur_turn)
 {
     // Check own ball not hit first
     int f = collobserver.get_first_hit();
-    if (cur_turn)
+
+    if (f == -1)
+        message("Ball not hit", 2000);
+    else if (cur_turn)
     {
         if (team_color == 1 && (Ball::is_stripes(f) || f == 8))
+        {
             player1turn = !cur_turn;
+            message("Own Ball not hit first", 2000);
+        }
         else if (team_color == 2 && (Ball::is_solid(f) || f == 8))
+        {
             player1turn = !cur_turn;
+            message("Own Ball not hit first", 2000);
+        }
     }
     else // Player 2 turn
     {
         if (team_color == 2 && (Ball::is_stripes(f) || f == 8))
+        {
             player1turn = !cur_turn;
+            message("Own Ball not hit first", 2000);
+        }
         else if (team_color == 1 && (Ball::is_solid(f) || f == 8))
+        {
             player1turn = !cur_turn;
+            message("Own Ball not hit first", 2000);
+        }
     }
+
 }
 
 void Level::check_balls_off_table(bool cur_turn)
@@ -320,12 +336,14 @@ void Level::check_balls_off_table(bool cur_turn)
             b.movData.speed_y = 0.0;
 
             player1turn = !cur_turn;
+            message("Ball fell off table", 2000);
         }
 
     if (ball_off_table(cueball))
     {
         create_cue_ball();
         player1turn = !cur_turn;
+        message("Cue Ball fell off table", 2000);
     }
 }
 
@@ -353,6 +371,7 @@ void Level::check_balls_in_pockets(bool cur_turn)
         {
             create_cue_ball();
             player1turn = !cur_turn;
+            message("Cue Ball pocketed", 2000);
         }
 
         if (cur_turn) // Player 1 turn
@@ -460,6 +479,8 @@ void Level::message(const std::string& msg, unsigned delay)
 
     Texture t {};
     t.loadFromRenderedText(msg, f, SDL_Color{0xFF,0xFF,0xFF,0xFF});
+
+    this->render();
 
     t.render(static_cast<int>((mainwindow->getWidth() - t.getWidth()) / 2),
              static_cast<int>((mainwindow->getHeight() - t.getHeight()) / 2));
