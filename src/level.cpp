@@ -7,6 +7,8 @@
 
 #include <SDL.h>
 
+const double PI = std::atan(1) * 4;
+
 Level::Level()
     : background{}, p1{}, p2{}, f1{}, b8{}, b1{}, b9{},
       collobserver{}, audio{}, tab{&collobserver}
@@ -89,20 +91,9 @@ void Level::render()
 
 void Level::handle_when_still(SDL_Event& e)
 {
-    static const double pi = std::atan(1) * 4;
-
     if (e.type == SDL_KEYDOWN || e.type == SDL_MOUSEBUTTONDOWN)
     {
-        collobserver.reset_first_hit();
-
-        double speed = 11.0;
-        double angle = (cue.getAngle() * pi) / 180.0;
-
-        cueball.movData.speed_y = -1 * std::sin(angle) * speed;
-        cueball.movData.speed_x = -1 * std::cos(angle) * speed;
-
-        cueball.notify(Event::SUBJECT_CUE_COLLIDED);
-        move_was_made = true;
+        shoot(11.0);
     }
     else if (e.type == SDL_MOUSEMOTION)
     {
@@ -111,7 +102,7 @@ void Level::handle_when_still(SDL_Event& e)
         SDL_GetMouseState( &x, &y );
         auto oposed = cueball.posData.pos_y - y;
         auto hyp = std::hypot(cueball.posData.pos_x - x, cueball.posData.pos_y - y);
-        double degrees = (std::asin(oposed / hyp) * 180.0) / pi + 180.0;
+        double degrees = (std::asin(oposed / hyp) * 180.0) / PI + 180.0;
 
         if (x > cueball.posData.pos_x)
             degrees = 180.0 - degrees;
@@ -488,4 +479,17 @@ void Level::message(const std::string& msg, unsigned delay)
     mainwindow->update();
 
     SDL_Delay(delay);
+}
+
+void Level::shoot(double speed)
+{
+    collobserver.reset_first_hit();
+
+    double angle = (cue.getAngle() * PI) / 180.0;
+
+    cueball.movData.speed_y = -1 * std::sin(angle) * speed;
+    cueball.movData.speed_x = -1 * std::cos(angle) * speed;
+
+    cueball.notify(Event::SUBJECT_CUE_COLLIDED);
+    move_was_made = true;
 }

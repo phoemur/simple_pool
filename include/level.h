@@ -13,6 +13,8 @@
 #include <vector>
 #include <utility>
 
+extern const double PI;
+
 class Level : public GameState {
     Texture background;
     Texture p1, p2;
@@ -56,6 +58,7 @@ private:
     void won(bool cur_turn);
     void lost(bool cur_turn);
     void message(const std::string& msg, unsigned delay);
+    void shoot(double speed);
 };
 
 #endif // LEVEL_H
