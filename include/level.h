@@ -33,6 +33,7 @@ class Level : public GameState {
     bool player1turn = true;
     bool move_was_made = false;
     int team_color = 0; // 0 = undefined, 1 = player1 kills solid, 2 = player1 kills stripes
+    bool mouse_pressed = false;
 
 public:
     Level();

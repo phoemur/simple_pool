@@ -60,7 +60,8 @@ void Level::logic()
 
     if (!moving_state) // Check player moves and state changes
     {
-        recenter_cue();
+        if (!mouse_pressed)
+            recenter_cue();
 
         if (move_was_made)
             change_state();
@@ -91,15 +92,34 @@ void Level::render()
 
 void Level::handle_when_still(SDL_Event& e)
 {
-    if (e.type == SDL_KEYDOWN || e.type == SDL_MOUSEBUTTONDOWN)
+    if (e.type == SDL_KEYDOWN && (e.key.keysym.sym == SDLK_SPACE || e.key.keysym.sym == SDLK_RETURN))
     {
         shoot(11.0);
+    }
+    else if (e.type == SDL_MOUSEBUTTONDOWN)
+    {
+        mouse_pressed = true;
+    }
+    else if (e.type == SDL_MOUSEBUTTONUP)
+    {
+        double force = std::hypot(cueball.posData.pos_x - cue.getX(),
+                                  cueball.posData.pos_y - cue.getY());
+
+        force /= 8.0;
+
+        if (force > 12.0)
+            force = 12.0;
+        else if (force < 1.0)
+            force = 1.0;
+
+        shoot(force);
     }
     else if (e.type == SDL_MOUSEMOTION)
     {
         //Get mouse position
         int x, y;
         SDL_GetMouseState( &x, &y );
+
         auto oposed = cueball.posData.pos_y - y;
         auto hyp = std::hypot(cueball.posData.pos_x - x, cueball.posData.pos_y - y);
         double degrees = (std::asin(oposed / hyp) * 180.0) / PI + 180.0;
@@ -110,7 +130,17 @@ void Level::handle_when_still(SDL_Event& e)
         if (degrees < 0.0)
             degrees += 360.0;
 
-        cue.setDeg(degrees);
+        if (!mouse_pressed)
+            cue.setDeg(degrees);
+        else
+        {
+            double angle = (cue.getAngle() * PI) / 180.0;
+
+            double px = cueball.posData.pos_x + (std::cos(angle) * hyp) + cueball.posData.radius;
+            double py = cueball.posData.pos_y + (std::sin(angle) * hyp) - cueball.posData.radius + (cue.getHeight()/2.0);
+
+            cue.setPos(px, py);
+        }
     }
 }
 
@@ -152,7 +182,7 @@ void Level::create_cue_ball()
     cueball = Ball{};
     cueball.setTex("./pool_assets/ball0.png");
     cueball.id = 0;
-    cueball.mass = 13.0;
+    cueball.mass = 11.0;
     cueball.addObserver(&collobserver);
     cueball.addObserver(&audio);
 
@@ -327,14 +357,14 @@ void Level::check_balls_off_table(bool cur_turn)
             b.movData.speed_y = 0.0;
 
             player1turn = !cur_turn;
-            message("Ball fell off table", 2000);
+            message("Ball fell off the table", 2000);
         }
 
     if (ball_off_table(cueball))
     {
         create_cue_ball();
         player1turn = !cur_turn;
-        message("Cue Ball fell off table", 2000);
+        message("Cue Ball fell off the table", 2000);
     }
 }
 
@@ -492,4 +522,5 @@ void Level::shoot(double speed)
 
     cueball.notify(Event::SUBJECT_CUE_COLLIDED);
     move_was_made = true;
+    mouse_pressed = false;
 }

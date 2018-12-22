@@ -51,9 +51,9 @@ MainWindow::MainWindow(int w, int h, const std::string& title)
 
 MainWindow::~MainWindow() noexcept
 {
-    SDL_DestroyRenderer( gRenderer );
+    SDL_DestroyRenderer(gRenderer);
 
-    SDL_DestroyWindow( gWindow );
+    SDL_DestroyWindow(gWindow);
 
     Mix_Quit();
     TTF_Quit();

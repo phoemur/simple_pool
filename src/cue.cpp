@@ -22,3 +22,8 @@ void Cue::setDeg(double angle)
 {
     degrees = angle;
 }
+
+void Cue::setX(double x)
+{
+    posX = x;
+}

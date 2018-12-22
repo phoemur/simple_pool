@@ -73,12 +73,6 @@ Table::Table(CollisionObserver* c)
 void Table::render()
 {
     background.render(posX, posY);
-
-    /*
-    for (auto& elem : r)
-        elem.render();
-    for (auto& elem : b)
-        elem.render();*/
 }
 
 bool Table::is_pocketed(const Ball& b)

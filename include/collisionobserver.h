@@ -15,8 +15,8 @@ public:
 
     virtual void onNotify(Subject& entity, Event event) override;
 
-    int get_first_hit() const noexcept {return first_hit;}
-    void reset_first_hit() noexcept {first_hit = -1;}
+    int    get_first_hit() const noexcept {return first_hit;}
+    void reset_first_hit()       noexcept {first_hit = -1;}
 private:
     int first_hit = -1;
 

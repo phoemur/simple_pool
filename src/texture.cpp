@@ -16,7 +16,6 @@ Texture::Texture()
 
 Texture::~Texture()
 {
-    //Deallocate
     free();
 }
 
