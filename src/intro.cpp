@@ -19,7 +19,7 @@ void Intro::handle_events()
     {
         if (e.type == SDL_QUIT)
             GameState::next_state = GameStates::Quit;
-        else if (e.type == SDL_KEYDOWN || e.type == SDL_MOUSEBUTTONDOWN)
+        else if (e.type == SDL_KEYDOWN || e.type == SDL_MOUSEBUTTONUP)
             GameState::next_state = GameStates::Level;
     }
 }

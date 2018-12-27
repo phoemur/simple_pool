@@ -9,13 +9,8 @@ CollisionObserver::CollisionObserver() {}
 
 void CollisionObserver::onNotify(Subject& entity, Event event)
 {
-    switch (event) {
-        case Event::SUBJECT_MOVED:
-            checkCollisions(dynamic_cast<Ball*>(&entity));
-            break;
-        default:
-            break;
-    }
+    if (event == Event::SUBJECT_MOVED)
+        checkCollisions(dynamic_cast<Ball*>(&entity));
 }
 
 double CollisionObserver::distanceSquared(double x1, double y1, double x2, double y2)

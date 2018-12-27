@@ -23,13 +23,11 @@ void changeState(std::unique_ptr<GameState>& state)
                 state = std::make_unique<Level>();
                 break;
             case GameStates::Won:
-                //won();
                 GameState::next_state = GameStates::Intro;
                 state.reset(nullptr);
                 state = std::make_unique<Intro>();
                 break;
             case GameStates::Lost:
-                //lost();
                 GameState::next_state = GameStates::Intro;
                 state.reset(nullptr);
                 state = std::make_unique<Intro>();

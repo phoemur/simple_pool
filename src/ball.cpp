@@ -68,6 +68,6 @@ void Ball::render()
 
 bool Ball::is_moving() const noexcept
 {
-    return is_movable && (std::abs(movData.speed_x) > 0.0
-                       || std::abs(movData.speed_y) > 0.0);
+    return is_movable && (std::abs(movData.speed_x) > 0.0 ||
+                          std::abs(movData.speed_y) > 0.0);
 }
