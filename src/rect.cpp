@@ -60,14 +60,15 @@ inline bool operator==(const SDL_Color& a, const SDL_Color& b)
 
 void Rect::render()
 {
-    if (visible) {
-        if (solid) {
+    if (visible)
+    {
+        if (solid)
+        {
             SDL_SetRenderDrawColor(mainwindow->getRenderer(), inside.r, inside.g, inside.b, inside.a);
             SDL_RenderFillRect(mainwindow->getRenderer(), &rect);
 
-            if (inside == border) {
+            if (inside == border)
                 return;
-            }
         }
 
         SDL_SetRenderDrawColor(mainwindow->getRenderer(), border.r, border.g, border.b, border.a);

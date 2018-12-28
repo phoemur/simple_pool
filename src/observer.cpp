@@ -8,9 +8,8 @@ Observer::Observer()
 
 Observer::~Observer() noexcept
 {
-    for (Subject* sub: observed_) {
+    for (Subject* sub: observed_)
         sub->removeObserver(this);
-    }
 }
 
 void Observer::registerSub(Subject* s)
