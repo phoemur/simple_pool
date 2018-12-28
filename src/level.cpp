@@ -317,12 +317,12 @@ void Level::check_first_hit(bool cur_turn)
         message("Ball not hit", 2000);
     else if (cur_turn)
     {
-        if (team_color == 1 && (Ball::is_stripes(f) || f == 8))
+        if (team_color == 1 && Ball::is_stripes(f))
         {
             player1turn = !cur_turn;
             message("Own Ball not hit first", 2000);
         }
-        else if (team_color == 2 && (Ball::is_solid(f) || f == 8))
+        else if (team_color == 2 && Ball::is_solid(f))
         {
             player1turn = !cur_turn;
             message("Own Ball not hit first", 2000);
@@ -330,12 +330,12 @@ void Level::check_first_hit(bool cur_turn)
     }
     else // Player 2 turn
     {
-        if (team_color == 2 && (Ball::is_stripes(f) || f == 8))
+        if (team_color == 2 && Ball::is_stripes(f))
         {
             player1turn = !cur_turn;
             message("Own Ball not hit first", 2000);
         }
-        else if (team_color == 1 && (Ball::is_solid(f) || f == 8))
+        else if (team_color == 1 && Ball::is_solid(f))
         {
             player1turn = !cur_turn;
             message("Own Ball not hit first", 2000);
