@@ -1,5 +1,7 @@
 #include "ball.h"
 
+#include <cmath>
+
 Ball::Ball()
     : texture{},
       posData{0.0, 0.0, 0.0},

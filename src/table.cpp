@@ -3,6 +3,7 @@
 #include "collisionobserver.h"
 
 #include <limits>
+#include <cmath>
 
 Table::Table(CollisionObserver* c)
     : posX{}, posY{}, background{}
