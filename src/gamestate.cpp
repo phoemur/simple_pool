@@ -15,21 +15,17 @@ void changeState(std::unique_ptr<GameState>& state)
     if (GameState::next_state != GameStates::Null) {
         switch (GameState::next_state) {
             case GameStates::Intro:
-                state.reset(nullptr);
                 state = std::make_unique<Intro>();
                 break;
             case GameStates::Level:
-                state.reset(nullptr);
                 state = std::make_unique<Level>();
                 break;
             case GameStates::Won:
                 GameState::next_state = GameStates::Intro;
-                state.reset(nullptr);
                 state = std::make_unique<Intro>();
                 break;
             case GameStates::Lost:
                 GameState::next_state = GameStates::Intro;
-                state.reset(nullptr);
                 state = std::make_unique<Intro>();
                 break;
             default:
