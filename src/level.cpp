@@ -363,6 +363,7 @@ void Level::check_balls_off_table(bool cur_turn)
     if (ball_off_table(cueball))
     {
         create_cue_ball();
+        recenter_cue();
         player1turn = !cur_turn;
         message("Cue Ball fell off the table", 2000);
     }
@@ -391,6 +392,7 @@ void Level::check_balls_in_pockets(bool cur_turn)
         if (std::find(pockets.begin(), pockets.end(), 0) != pockets.end())
         {
             create_cue_ball();
+            recenter_cue();
             player1turn = !cur_turn;
             message("Cue Ball pocketed", 2000);
         }
